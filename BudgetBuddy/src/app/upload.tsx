@@ -98,8 +98,8 @@ export default function UploadScreen() {
     <View style={styles.root}>
       <SafeAreaView>
         <View style={styles.header}>
-          <Text style={styles.title}>upload</Text>
-          <Text style={styles.subtitle}>Import your bank statement or receipts</Text>
+          <Text style={styles.title}>Upload</Text>
+          <Text style={styles.subtitle}>Import your bank statement, set your budget, or reset your account.</Text>
         </View>
       </SafeAreaView>
 

@@ -72,7 +72,7 @@ export default function ShopScreen() {
     <View style={styles.root}>
       <SafeAreaView>
         <View style={styles.header}>
-          <Text style={styles.title}>shop</Text>
+          <Text style={styles.title}>Shop</Text>
           <Text style={styles.subtitle}>Unlock troll rewards as you budget better 🌿</Text>
         </View>
       </SafeAreaView>

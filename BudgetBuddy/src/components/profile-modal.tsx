@@ -37,7 +37,7 @@ export function ProfileModal({ visible, onClose }: Props) {
       <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 24) }]}>
         <View style={styles.handle} />
         <View style={styles.header}>
-          <Text style={styles.title}>your profile</Text>
+          <Text style={styles.title}>Your Profile</Text>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn} hitSlop={8}>
             <Text style={styles.closeIcon}>✕</Text>
           </TouchableOpacity>

@@ -92,7 +92,6 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.card}>
-        <View style={styles.dragHandle} />
         <View style={styles.cardRow}>
           <Text style={styles.cardTitle}>Monthly Budget</Text>
           <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
@@ -114,12 +113,12 @@ export default function HomeScreen() {
           </View>
         )}
         <View style={styles.amounts}>
-          <View>
+          <View style={styles.amountSide}>
             <Text style={styles.amountLabel}>Spent</Text>
             <Text style={styles.amountValue}>${spent.toFixed(2)}</Text>
           </View>
           <View style={styles.amountDivider} />
-          <View style={{ alignItems: 'flex-end' }}>
+          <View style={[styles.amountSide, styles.amountSideRight]}>
             <Text style={styles.amountLabel}>Remaining</Text>
             <Text style={[styles.amountValue, { color: remaining >= 0 ? Brand.gold : '#ef4444' }]}>
               {remaining < 0 ? '-' : ''}${Math.abs(remaining).toFixed(2)}
@@ -170,8 +169,8 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 24,
+    paddingTop: 20,
+    paddingBottom: 30,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -6 },
     shadowOpacity: 0.07,
@@ -215,7 +214,9 @@ const styles = StyleSheet.create({
   },
   tipTitle: { fontSize: 12, fontWeight: '700', color: '#c2410c' },
   tipText: { fontSize: 12, color: '#7c2d12', lineHeight: 17 },
-  amounts: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  amounts: { flexDirection: 'row', alignItems: 'center' },
+  amountSide: { flex: 1 },
+  amountSideRight: { alignItems: 'flex-end' },
   amountLabel: { fontSize: 11, color: Brand.sage, letterSpacing: 0.06, marginBottom: 2 },
   amountValue: { fontSize: 20, fontWeight: '700', color: Brand.primaryDark, letterSpacing: -0.4 },
   amountDivider: { width: 1, height: 36, backgroundColor: Brand.progressBg },

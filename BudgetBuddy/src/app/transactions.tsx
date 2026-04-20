@@ -16,7 +16,7 @@ export default function TransactionsScreen() {
     <View style={styles.root}>
       <SafeAreaView>
         <View style={styles.header}>
-          <Text style={styles.title}>transactions</Text>
+          <Text style={styles.title}>Transactions</Text>
           <Text style={styles.subtitle}>Your spending history</Text>
         </View>
         <View style={styles.summaryRow}>
