@@ -63,3 +63,38 @@ export const Spacing = {
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
+
+export const Brand = {
+  background: '#e5dece',
+  primaryDark: '#333f34',
+  sage: '#708666',
+  gold: '#ffc039',
+  progressBg: '#f3f4f6',
+  inputBg: '#f8faf7',
+  cardBorder: '#f3f4f6',
+  warning: '#ef4444',
+  inactive: '#c5c5c5',
+  separator: '#e5e7eb',
+} as const;
+
+export const CategoryColors: Record<string, string> = {
+  Food: '#fef9c3',
+  Fun: '#ede9fe',
+  Transport: '#dbeafe',
+  Housing: '#dcfce7',
+  Education: '#fce7f3',
+  Health: '#d1fae5',
+  Shopping: '#fff7ed',
+  Other: '#f3f4f6',
+};
+
+export const CategoryEmojis: Record<string, string> = {
+  Food: '🍔',
+  Fun: '🎮',
+  Transport: '🚗',
+  Housing: '🏠',
+  Education: '📚',
+  Health: '💊',
+  Shopping: '👕',
+  Other: '💡',
+};
