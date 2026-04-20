@@ -20,7 +20,9 @@ interface Props {
 
 export function ProfileModal({ visible, onClose }: Props) {
   const insets = useSafeAreaInsets();
-  const { streak, maxStreak, totalBudget, spent, remaining, expenses, equippedItem } = useBudget();
+  const { streak, maxStreak, totalBudget, remaining, expenses, equippedItem } = useBudget();
+  const buddyStatus = getBuddyStatus(streak, remaining, equippedItem);
+  const remainingValue = `${remaining < 0 ? '-' : ''}$${Math.abs(remaining).toFixed(2)}`;
 
   const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
   const expenseCount = expenses.length;
@@ -37,20 +39,20 @@ export function ProfileModal({ visible, onClose }: Props) {
       <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 24) }]}>
         <View style={styles.handle} />
         <View style={styles.header}>
-          <Text style={styles.title}>your profile</Text>
+          <Text style={styles.title}>Your Profile</Text>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn} hitSlop={8}>
-            <Text style={styles.closeIcon}>✕</Text>
+            <Text style={styles.closeIcon}>x</Text>
           </TouchableOpacity>
         </View>
 
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.statsGrid}>
-            <StatCard label="Current Streak" value={`${streak} days`} emoji="🔥" />
-            <StatCard label="Best Streak" value={`${maxStreak} days`} emoji="🏆" />
-            <StatCard label="Monthly Budget" value={`$${totalBudget.toFixed(0)}`} emoji="💰" />
-            <StatCard label="Remaining" value={`$${Math.abs(remaining).toFixed(2)}`} emoji={remaining >= 0 ? '✅' : '⚠️'} />
-            <StatCard label="Expenses Logged" value={`${expenseCount}`} emoji="📋" />
-            <StatCard label="All-time Spent" value={`$${totalSpent.toFixed(2)}`} emoji="💸" />
+            <StatCard label="Current Streak" value={`${streak} days`} emoji={'\u{1F525}'} />
+            <StatCard label="Best Streak" value={`${maxStreak} days`} emoji={'\u{1F3C6}'} />
+            <StatCard label="Monthly Budget" value={`$${totalBudget.toFixed(0)}`} emoji={'\u{1F4B0}'} />
+            <StatCard label="Remaining" value={remainingValue} emoji={remaining >= 0 ? '\u{2705}' : '\u{26A0}\u{FE0F}'} />
+            <StatCard label="Expenses Logged" value={`${expenseCount}`} emoji={'\u{1F4CB}'} />
+            <StatCard label="All-time Spent" value={`$${totalSpent.toFixed(2)}`} emoji={'\u{1F4B8}'} />
           </View>
 
           {topCategory && (
@@ -65,14 +67,20 @@ export function ProfileModal({ visible, onClose }: Props) {
 
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>BUDDY STATUS</Text>
-            <Text style={styles.buddyStatus}>
-              {equippedItem ? `Accessory equipped (#${equippedItem})` : streak === 0 ? 'On fire 🔥 — log an expense to start your streak!' : remaining < 0 ? 'Struggling 😟 — over budget this month' : streak >= 100 ? 'Thriving 🌸 — amazing work!' : 'Healthy 🌱 — keep it up!'}
-            </Text>
+            <Text style={styles.buddyStatus}>{buddyStatus}</Text>
           </View>
         </ScrollView>
       </View>
     </Modal>
   );
+}
+
+function getBuddyStatus(streak: number, remaining: number, equippedItem: string | null) {
+  if (remaining < 0) return 'On fire - over budget this month';
+  if (streak === 0) return 'On fire - log an expense to start your streak';
+  if (streak >= 100) return 'Thriving - amazing work';
+  if (equippedItem) return `Healthy - accessory equipped (#${equippedItem})`;
+  return 'Healthy - keep it up';
 }
 
 function StatCard({ label, value, emoji }: { label: string; value: string; emoji: string }) {

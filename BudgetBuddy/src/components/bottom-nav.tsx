@@ -1,19 +1,12 @@
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { SymbolView } from 'expo-symbols';
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LogExpenseModal } from './log-expense-modal';
 import { Brand } from '@/constants/theme';
 import { useBudget } from '@/context/budget';
-
-const TABS = [
-  { name: 'index', label: 'Home', symbol: 'house' as const },
-  { name: 'transactions', label: 'Transactions', symbol: 'clock' as const },
-  { name: 'shop', label: 'Shop', symbol: 'bag' as const },
-  { name: 'upload', label: 'Upload', symbol: 'square.and.arrow.up' as const },
-];
 
 export function BottomNav({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();

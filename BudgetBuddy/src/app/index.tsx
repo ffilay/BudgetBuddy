@@ -39,8 +39,8 @@ const STATUS = {
 };
 
 function getCharState(streak: number, remaining: number, totalBudget: number): CharacterState {
-  if (streak === 0 || remaining < -(totalBudget * 0.25)) return 'onFire';
-  if (remaining < 0) return 'struggling';
+  if (remaining < 0 || streak === 0) return 'onFire';
+  if (remaining <= totalBudget * 0.2) return 'struggling';
   if (streak >= 100) return 'thriving';
   return 'healthy';
 }
@@ -55,9 +55,10 @@ export default function HomeScreen() {
   const { streak, totalBudget, spent, remaining, equippedItem } = useBudget();
   const [profileVisible, setProfileVisible] = useState(false);
   const [helpVisible, setHelpVisible] = useState(false);
-  const progressPct = Math.min(spent / totalBudget, 1);
+  const progressPct = Math.min(totalBudget > 0 ? spent / totalBudget : 0, 1);
   const charState = getCharState(streak, remaining, totalBudget);
   const status = getStatus(remaining, totalBudget);
+  const accessorySource = charState === 'healthy' && equippedItem ? ACCESSORY_IMG[equippedItem] : null;
 
   return (
     <View style={styles.root}>
@@ -84,7 +85,7 @@ export default function HomeScreen() {
       <View style={[styles.characterArea, charState === 'onFire' && { paddingLeft: 0 }]}>
         <View style={[styles.characterWrapper, charState === 'onFire' && styles.characterWrapperSmall]}>
           <Image
-            source={equippedItem && ACCESSORY_IMG[equippedItem] ? ACCESSORY_IMG[equippedItem] : CHARACTER_IMG[charState]}
+            source={accessorySource ?? CHARACTER_IMG[charState]}
             style={styles.characterImg}
             resizeMode="contain"
           />
@@ -92,7 +93,6 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.card}>
-        <View style={styles.dragHandle} />
         <View style={styles.cardRow}>
           <Text style={styles.cardTitle}>Monthly Budget</Text>
           <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
@@ -108,18 +108,20 @@ export default function HomeScreen() {
             <Text style={styles.tipTitle}>💡 Recovery Tip</Text>
             <Text style={styles.tipText}>
               {charState === 'onFire'
-                ? "Log your first expense today to start your streak and bring your buddy back to life!"
-                : "You're over budget. Try cutting back on dining out or entertainment to get back on track."}
+                ? remaining < 0
+                  ? "You're over budget. Cut back now or remove expenses to cool your buddy down."
+                  : "Log your first expense today to start your streak and bring your buddy back to life!"
+                : "You're close to your limit. Try cutting back on dining out or entertainment to stay on track."}
             </Text>
           </View>
         )}
         <View style={styles.amounts}>
-          <View>
+          <View style={styles.amountSide}>
             <Text style={styles.amountLabel}>Spent</Text>
             <Text style={styles.amountValue}>${spent.toFixed(2)}</Text>
           </View>
           <View style={styles.amountDivider} />
-          <View style={{ alignItems: 'flex-end' }}>
+          <View style={[styles.amountSide, styles.amountSideRight]}>
             <Text style={styles.amountLabel}>Remaining</Text>
             <Text style={[styles.amountValue, { color: remaining >= 0 ? Brand.gold : '#ef4444' }]}>
               {remaining < 0 ? '-' : ''}${Math.abs(remaining).toFixed(2)}
@@ -170,8 +172,8 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 24,
+    paddingTop: 20,
+    paddingBottom: 30,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -6 },
     shadowOpacity: 0.07,
@@ -215,7 +217,9 @@ const styles = StyleSheet.create({
   },
   tipTitle: { fontSize: 12, fontWeight: '700', color: '#c2410c' },
   tipText: { fontSize: 12, color: '#7c2d12', lineHeight: 17 },
-  amounts: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  amounts: { flexDirection: 'row', alignItems: 'center' },
+  amountSide: { flex: 1 },
+  amountSideRight: { alignItems: 'flex-end' },
   amountLabel: { fontSize: 11, color: Brand.sage, letterSpacing: 0.06, marginBottom: 2 },
   amountValue: { fontSize: 20, fontWeight: '700', color: Brand.primaryDark, letterSpacing: -0.4 },
   amountDivider: { width: 1, height: 36, backgroundColor: Brand.progressBg },

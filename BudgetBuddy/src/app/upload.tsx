@@ -54,7 +54,7 @@ export default function UploadScreen() {
 
       setPreview(rows.slice(0, 5));
       setPickState('done');
-    } catch (e) {
+    } catch {
       setPickState('error');
       Alert.alert('Error reading file', 'Could not read the selected file.');
     }
@@ -98,8 +98,8 @@ export default function UploadScreen() {
     <View style={styles.root}>
       <SafeAreaView>
         <View style={styles.header}>
-          <Text style={styles.title}>upload</Text>
-          <Text style={styles.subtitle}>Import your bank statement or receipts</Text>
+          <Text style={styles.title}>Upload</Text>
+          <Text style={styles.subtitle}>Import your bank statement, set your budget, or reset your account.</Text>
         </View>
       </SafeAreaView>
 
@@ -231,18 +231,31 @@ async function parseFile(uri: string, name: string): Promise<{ amount: number; c
 
 function extractRows(rows: any[][]): { amount: number; category: string; note: string }[] {
   const results: { amount: number; category: string; note: string }[] = [];
+  const header = rows[0]?.map((p: any) => String(p ?? '').trim().toLowerCase());
+  const hasHeader = header?.some((cell) => cell === 'amount');
+  const amountHeaderIdx = hasHeader ? header.findIndex((cell) => cell === 'amount') : -1;
+  const rowsToParse = hasHeader ? rows.slice(1) : rows;
 
-  for (const parts of rows) {
+  for (const parts of rowsToParse) {
     const cells = parts.map((p: any) => String(p ?? '').trim());
     if (cells.length < 2) continue;
 
-    // Find first positive numeric amount
     let amount = 0;
     let amountIdx = -1;
-    for (let i = 0; i < cells.length; i++) {
-      const n = parseFloat(cells[i].replace(/[$,]/g, ''));
-      if (!isNaN(n) && n > 0) { amount = n; amountIdx = i; break; }
+
+    if (amountHeaderIdx >= 0) {
+      const n = parseAmountCell(cells[amountHeaderIdx]);
+      if (n !== null) {
+        amount = n;
+        amountIdx = amountHeaderIdx;
+      }
+    } else {
+      for (let i = 0; i < cells.length; i++) {
+        const n = parseAmountCell(cells[i]);
+        if (n !== null) { amount = n; amountIdx = i; break; }
+      }
     }
+
     if (amountIdx === -1) continue;
 
     const remaining = cells.filter((_, i) => i !== amountIdx);
@@ -259,6 +272,16 @@ function extractRows(rows: any[][]): { amount: number; category: string; note: s
     results.push({ amount, category, note });
   }
   return results;
+}
+
+function parseAmountCell(value: string) {
+  if (/^\d{4}[-/]\d{1,2}[-/]\d{1,2}$/.test(value)) return null;
+
+  const cleaned = value.replace(/[$,\s]/g, '');
+  if (!/^-?\d+(\.\d+)?$/.test(cleaned)) return null;
+
+  const amount = Math.abs(Number(cleaned));
+  return amount > 0 ? amount : null;
 }
 
 const styles = StyleSheet.create({

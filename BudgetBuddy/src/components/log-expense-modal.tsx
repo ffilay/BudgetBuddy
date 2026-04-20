@@ -9,7 +9,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -36,6 +35,7 @@ export function LogExpenseModal({ visible, onClose, remainingBudget, onAddExpens
   const isWarning = amount > 0 && amount >= warningThreshold;
   const warningPct = remainingBudget > 0 ? Math.round((amount / remainingBudget) * 100) : 0;
   const canSubmit = amount > 0 && selectedCategory !== null;
+  const amountInputWidth = Math.min(260, Math.max(84, (amountStr.length || 4) * 21 + 24));
 
   useEffect(() => {
     if (success) {
@@ -45,7 +45,7 @@ export function LogExpenseModal({ visible, onClose, remainingBudget, onAddExpens
       }, 1000);
       return () => clearTimeout(t);
     }
-  }, [success]);
+  }, [success, onClose]);
 
   const handleClose = () => {
     setAmountStr('');
@@ -104,7 +104,7 @@ export function LogExpenseModal({ visible, onClose, remainingBudget, onAddExpens
           <View style={styles.amountContainer}>
             <Text style={styles.dollarSign}>$</Text>
             <TextInput
-              style={styles.amountInput}
+              style={[styles.amountInput, { width: amountInputWidth }]}
               value={amountStr}
               onChangeText={setAmountStr}
               keyboardType="decimal-pad"
@@ -117,7 +117,7 @@ export function LogExpenseModal({ visible, onClose, remainingBudget, onAddExpens
           {isWarning && (
             <View style={styles.warningBox}>
               <Text style={styles.warningTitle}>WARNING - CHECK YOUR NUMBERS</Text>
-              <Text style={styles.warningSubtext}>THAT'S {warningPct}% OF YOUR BUDGET</Text>
+              <Text style={styles.warningSubtext}>{"THAT'S"} {warningPct}% OF YOUR BUDGET</Text>
             </View>
           )}
 
@@ -249,14 +249,13 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     color: Brand.sage,
-    marginRight: 4,
+    marginRight: 1,
   },
   amountInput: {
     fontSize: 36,
     fontWeight: '700',
     color: Brand.primaryDark,
-    minWidth: 120,
-    textAlign: 'center',
+    textAlign: 'left',
     letterSpacing: 0.4,
   },
   warningBox: {
