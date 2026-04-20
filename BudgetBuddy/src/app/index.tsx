@@ -39,8 +39,8 @@ const STATUS = {
 };
 
 function getCharState(streak: number, remaining: number, totalBudget: number): CharacterState {
-  if (streak === 0 || remaining < -(totalBudget * 0.25)) return 'onFire';
-  if (remaining < 0) return 'struggling';
+  if (remaining < 0 || streak === 0) return 'onFire';
+  if (remaining <= totalBudget * 0.2) return 'struggling';
   if (streak >= 100) return 'thriving';
   return 'healthy';
 }
@@ -55,9 +55,10 @@ export default function HomeScreen() {
   const { streak, totalBudget, spent, remaining, equippedItem } = useBudget();
   const [profileVisible, setProfileVisible] = useState(false);
   const [helpVisible, setHelpVisible] = useState(false);
-  const progressPct = Math.min(spent / totalBudget, 1);
+  const progressPct = Math.min(totalBudget > 0 ? spent / totalBudget : 0, 1);
   const charState = getCharState(streak, remaining, totalBudget);
   const status = getStatus(remaining, totalBudget);
+  const accessorySource = charState === 'healthy' && equippedItem ? ACCESSORY_IMG[equippedItem] : null;
 
   return (
     <View style={styles.root}>
@@ -84,7 +85,7 @@ export default function HomeScreen() {
       <View style={[styles.characterArea, charState === 'onFire' && { paddingLeft: 0 }]}>
         <View style={[styles.characterWrapper, charState === 'onFire' && styles.characterWrapperSmall]}>
           <Image
-            source={equippedItem && ACCESSORY_IMG[equippedItem] ? ACCESSORY_IMG[equippedItem] : CHARACTER_IMG[charState]}
+            source={accessorySource ?? CHARACTER_IMG[charState]}
             style={styles.characterImg}
             resizeMode="contain"
           />
@@ -107,8 +108,10 @@ export default function HomeScreen() {
             <Text style={styles.tipTitle}>💡 Recovery Tip</Text>
             <Text style={styles.tipText}>
               {charState === 'onFire'
-                ? "Log your first expense today to start your streak and bring your buddy back to life!"
-                : "You're over budget. Try cutting back on dining out or entertainment to get back on track."}
+                ? remaining < 0
+                  ? "You're over budget. Cut back now or remove expenses to cool your buddy down."
+                  : "Log your first expense today to start your streak and bring your buddy back to life!"
+                : "You're close to your limit. Try cutting back on dining out or entertainment to stay on track."}
             </Text>
           </View>
         )}

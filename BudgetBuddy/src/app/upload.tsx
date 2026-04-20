@@ -54,7 +54,7 @@ export default function UploadScreen() {
 
       setPreview(rows.slice(0, 5));
       setPickState('done');
-    } catch (e) {
+    } catch {
       setPickState('error');
       Alert.alert('Error reading file', 'Could not read the selected file.');
     }

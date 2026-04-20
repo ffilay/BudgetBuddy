@@ -110,7 +110,7 @@ export default function ShopScreen() {
                         <Text style={styles.lockEmoji}>🔒</Text>
                         <Text style={styles.lockedText}>Locked</Text>
                       </View>
-                      <Text style={styles.unlockText}>Unlock: "{item.unlockCondition}"</Text>
+                      <Text style={styles.unlockText}>Unlock: {item.unlockCondition}</Text>
                     </View>
                   )}
                 </View>
